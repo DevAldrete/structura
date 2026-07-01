@@ -1,55 +1,71 @@
+// eslint.config.js
 import js from '@eslint/js';
+import globals from 'globals';
+import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
-import react from 'eslint-plugin-react';
+
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import tailwind from 'eslint-plugin-tailwindcss';
+
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import prettierConfig from 'eslint-config-prettier';
-import globals from 'globals';
 
-export default tseslint.config(
-  { ignores: ['dist', 'build', 'node_modules', '.react-router'] },
-
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  react.configs.flat.recommended,
-  ...tailwind.configs['flat/recommended'],
+export default defineConfig(
+  { ignores: ['dist/**', 'build/**', 'node_modules/**', '*.config.js'] },
 
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.recommended,
+      ...tseslint.configs.strict,
+      ...tseslint.configs.stylistic,
+    ],
     languageOptions: {
-      ecmaVersion: 2022,
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+      },
       parserOptions: {
         ecmaFeatures: { jsx: true },
       },
     },
+  },
+  {
+    files: ['app/root.tsx', 'app/routes/**/*.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    }
+  },
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
+      'react-x': reactX,
+      'react-dom': reactDom,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
-    settings: {
-      react: { version: 'detect' },
-      tailwindcss: {
-        cssConfigPath: './src/styles/global.css',
-      },
-    },
     rules: {
+      ...reactX.configs['recommended'].rules,
+
+      ...reactDom.configs['recommended'].rules,
+
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      'tailwindcss/classnames-order': 'warn',
-      'tailwindcss/no-contradicting-classname': 'error',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_' },
-      ],
+
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+
+      'react-x/prop-types': 'off', // Not needed with TS
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+    settings: {
+      'react-x': {
+        version: 'detect',
+      },
     },
   },
 
+  prettierRecommended,
   prettierConfig,
 );
