@@ -13,7 +13,7 @@ import prettierRecommended from 'eslint-plugin-prettier/recommended';
 import prettierConfig from 'eslint-config-prettier';
 
 export default defineConfig(
-  { ignores: ['dist/**', 'build/**', 'node_modules/**', '*.config.js'] },
+  { ignores: ['.react-router/**', 'dist/**', 'build/**', 'node_modules/**', '*.config.js'] },
 
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
@@ -33,12 +33,6 @@ export default defineConfig(
     },
   },
   {
-    files: ['app/root.tsx', 'app/routes/**/*.tsx'],
-    rules: {
-      'react-refresh/only-export-components': 'off',
-    },
-  },
-  {
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       'react-x': reactX,
@@ -53,7 +47,10 @@ export default defineConfig(
 
       ...reactHooks.configs.recommended.rules,
 
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true, allowExportNames: ['meta', 'links', 'loader', 'action', 'headers'] },
+      ],
 
       'react-x/prop-types': 'off', // Not needed with TS
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
