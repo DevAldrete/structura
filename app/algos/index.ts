@@ -1,17 +1,32 @@
 import type { SortingAlgo } from '~/components/engine/engine';
+import type { GraphRunner } from '~/graph/graph';
 import { bubbleSort } from './bubble_sort';
 import { insertionSort } from './insertion_sort';
 import { mergeSort } from './merge_sort';
 import { quickSort } from './quick_sort';
 import { selectionSort } from './selection_sort';
+import { myersDiff, type DiffRunner } from './myers_diff';
+import { bfs } from '~/graph/bfs';
+import { dfs } from '~/graph/dfs';
+import { dijkstra } from '~/graph/dijkstra';
 
-export interface AlgoEntry {
+export interface AlgoBase {
   slug: string;
   name: string;
   desc: string;
   complexity: string;
-  run: SortingAlgo;
 }
+
+export type AlgoEntry = AlgoBase &
+  (
+    | { input: 'array'; run: SortingAlgo }
+    | { input: 'graph'; run: GraphRunner; defaultStart: number }
+    | { input: 'diff'; run: DiffRunner }
+  );
+
+export type ArrayAlgo = Extract<AlgoEntry, { input: 'array' }>;
+export type GraphAlgo = Extract<AlgoEntry, { input: 'graph' }>;
+export type DiffAlgo = Extract<AlgoEntry, { input: 'diff' }>;
 
 export const ALGOS: Record<string, AlgoEntry> = {
   'bubble-sort': {
@@ -19,6 +34,7 @@ export const ALGOS: Record<string, AlgoEntry> = {
     name: 'Bubble Sort',
     desc: 'Repeatedly steps through the list, swapping adjacent items that are out of order.',
     complexity: 'O(n²)',
+    input: 'array',
     run: bubbleSort,
   },
   'selection-sort': {
@@ -26,6 +42,7 @@ export const ALGOS: Record<string, AlgoEntry> = {
     name: 'Selection Sort',
     desc: 'Repeatedly selects the smallest remaining element and moves it to its sorted position.',
     complexity: 'O(n²)',
+    input: 'array',
     run: selectionSort,
   },
   'insertion-sort': {
@@ -33,6 +50,7 @@ export const ALGOS: Record<string, AlgoEntry> = {
     name: 'Insertion Sort',
     desc: 'Builds the sorted array one item at a time by inserting each into its correct place.',
     complexity: 'O(n²)',
+    input: 'array',
     run: insertionSort,
   },
   'merge-sort': {
@@ -40,6 +58,7 @@ export const ALGOS: Record<string, AlgoEntry> = {
     name: 'Merge Sort',
     desc: 'Divides the list in half, sorts each half, then merges the halves back together.',
     complexity: 'O(n log n)',
+    input: 'array',
     run: mergeSort,
   },
   'quick-sort': {
@@ -47,6 +66,42 @@ export const ALGOS: Record<string, AlgoEntry> = {
     name: 'Quick Sort',
     desc: 'Picks a pivot, partitions around it, and recurses on each side.',
     complexity: 'O(n log n)',
+    input: 'array',
     run: quickSort,
+  },
+  bfs: {
+    slug: 'bfs',
+    name: 'Breadth-First Search',
+    desc: 'Explores a graph level by level, visiting every neighbour of a node before going deeper.',
+    complexity: 'O(V + E)',
+    input: 'graph',
+    defaultStart: 0,
+    run: bfs,
+  },
+  dfs: {
+    slug: 'dfs',
+    name: 'Depth-First Search',
+    desc: 'Explores a graph by going as deep as possible along each branch before backtracking.',
+    complexity: 'O(V + E)',
+    input: 'graph',
+    defaultStart: 0,
+    run: dfs,
+  },
+  dijkstra: {
+    slug: 'dijkstra',
+    name: "Dijkstra's Algorithm",
+    desc: 'Finds the shortest path from a source to every other node in a weighted graph.',
+    complexity: 'O(E log V)',
+    input: 'graph',
+    defaultStart: 0,
+    run: dijkstra,
+  },
+  'myers-diff': {
+    slug: 'myers-diff',
+    name: 'Myers Diff',
+    desc: 'Finds the shortest edit script between two sequences by walking the edit graph diagonals.',
+    complexity: 'O(ND)',
+    input: 'diff',
+    run: myersDiff,
   },
 };
