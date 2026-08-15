@@ -22,7 +22,6 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@11.21.0",
   "dependencies": {
     "@react-router/node": "8.0.0",
     "@react-router/serve": "8.0.0",
