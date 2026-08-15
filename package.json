@@ -22,6 +22,7 @@
       "prettier --write"
     ]
   },
+  "packageManager": "pnpm@11.21.0",
   "dependencies": {
     "@react-router/node": "8.0.0",
     "@react-router/serve": "8.0.0",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@netlify/vite-plugin-react-router": "^4.0.0",
     "@react-router/dev": "8.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^22",
