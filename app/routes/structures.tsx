@@ -1,20 +1,20 @@
-import { ALGOS } from '~/algos';
+import { STRUCTURES } from '~/ds';
 
-export default function Algos() {
+export default function Structures() {
   return (
     <div className="min-h-screen bg-white text-black flex flex-col items-center justify-center px-6 dark:bg-black dark:text-white">
-      <h1 className="text-3xl font-mono font-bold tracking-tight mb-2">Algorithms</h1>
+      <h1 className="text-3xl font-mono font-bold tracking-tight mb-2">Data Structures</h1>
       <p className="text-sm text-gray-400 font-mono mb-10">pick one</p>
 
       <div className="w-full max-w-md flex flex-col gap-3">
-        {Object.values(ALGOS).map((algo) => (
+        {Object.values(STRUCTURES).map((ds) => (
           <a
-            key={algo.slug}
-            href={`/algos/${algo.slug}`}
+            key={ds.slug}
+            href={`/ds/${ds.slug}`}
             className="flex items-center justify-between px-5 py-3 border border-gray-200 font-mono text-sm hover:border-black transition-colors dark:border-gray-800 dark:hover:border-white"
           >
-            <span className="font-medium">{algo.name}</span>
-            <span className="text-gray-400 text-xs">{algo.complexity}</span>
+            <span className="font-medium">{ds.name}</span>
+            <span className="text-gray-400 text-xs max-w-[55%] text-right">{ds.desc}</span>
           </a>
         ))}
       </div>

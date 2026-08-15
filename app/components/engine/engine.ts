@@ -1,40 +1,36 @@
 import type { StEvent } from '~/components/engine/event';
-import type { Position } from '~/components/models/position';
 
 export interface Step {
   array: number[];
   compare: [number, number] | null;
   swapping: [number, number] | null;
+  written: { index: number; value: number } | null;
 }
 
-export function collectSteps(arr: number[], algo: () => Generator<StEvent>): Step[] {
+export type SortingAlgo = (arr: number[]) => Generator<StEvent>;
+
+export function collectSteps(arr: number[], algo: SortingAlgo): Step[] {
   const a = [...arr];
-  const gen = algo();
-  const steps: Step[] = [{ array: [...a], compare: null, swapping: null }];
+  const gen = algo(a);
+  const steps: Step[] = [{ array: [...a], compare: null, swapping: null, written: null }];
 
   for (const event of gen) {
     if (event.action === 'compare') {
-      steps.push({ array: [...a], compare: event.ids, swapping: null });
+      steps.push({ array: [...a], compare: event.ids, swapping: null, written: null });
     } else if (event.action === 'swap') {
       [a[event.ids[0]], a[event.ids[1]]] = [a[event.ids[1]], a[event.ids[0]]];
-      steps.push({ array: [...a], compare: null, swapping: event.ids });
+      steps.push({ array: [...a], compare: null, swapping: event.ids, written: null });
+    } else {
+      a[event.index] = event.value;
+      steps.push({
+        array: [...a],
+        compare: null,
+        swapping: null,
+        written: { index: event.index, value: event.value },
+      });
     }
   }
 
-  steps.push({ array: [...a], compare: null, swapping: null });
+  steps.push({ array: [...a], compare: null, swapping: null, written: null });
   return steps;
-}
-
-export function getNodePositions(
-  arr: number[],
-  canvasWidth: number,
-  canvasHeight: number,
-): Map<number, Position> {
-  const positions = new Map<number, Position>();
-  const gap = Math.min(60, (canvasWidth - 40) / arr.length);
-  const startX = (canvasWidth - gap * (arr.length - 1)) / 2;
-  arr.forEach((_, i) => {
-    positions.set(i, { x: startX + gap * i, y: canvasHeight / 2 });
-  });
-  return positions;
 }

@@ -49,7 +49,10 @@ export default defineConfig(
 
       'react-refresh/only-export-components': [
         'warn',
-        { allowConstantExport: true, allowExportNames: ['meta', 'links', 'loader', 'action', 'headers'] },
+        {
+          allowConstantExport: true,
+          allowExportNames: ['meta', 'links', 'loader', 'action', 'headers'],
+        },
       ],
 
       'react-x/prop-types': 'off', // Not needed with TS

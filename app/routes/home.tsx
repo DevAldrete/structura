@@ -26,7 +26,7 @@ export default function Home() {
           Explore Algorithms
         </a>
         <a
-          href="#"
+          href="/ds"
           className="px-6 py-2 border border-gray-200 text-gray-400 hover:border-black hover:text-black transition-colors dark:border-gray-800 dark:hover:border-white dark:hover:text-white"
         >
           Data Structures

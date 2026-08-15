@@ -1,6 +1,6 @@
-export type Action = 'swap' | 'compare';
+export type ArrayEvent =
+  | { action: 'compare'; ids: [number, number] }
+  | { action: 'swap'; ids: [number, number] }
+  | { action: 'write'; index: number; value: number };
 
-export interface StEvent {
-  action: Action;
-  ids: [number, number];
-}
+export type StEvent = ArrayEvent;
