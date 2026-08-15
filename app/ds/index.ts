@@ -1,11 +1,14 @@
 import type { DSState } from './engine';
+import { btreeScript, type BTreeOp } from './b_tree';
+import { graphScript, type GraphOp } from './graph';
 import { linkedListScript, type ListKind, type ListOp } from './lists';
 import { queueScript, type QueueOp } from './queue';
 import { stackScript, type StackOp } from './stack';
+import { bstScript, type TreeOp } from './tree';
 
-export type DSOp = ListOp | StackOp | QueueOp;
+export type DSOp = ListOp | StackOp | QueueOp | TreeOp | BTreeOp | GraphOp;
 
-export type Layout = 'row' | 'column';
+export type Layout = 'row' | 'column' | 'tree' | 'graph';
 export type Arrows = 'none' | 'forward' | 'both';
 
 export interface OpMeta {
@@ -112,6 +115,34 @@ const listEntry = (
   build: (ops) => linkedListScript(initial, ops as ListOp[], kind),
 });
 
+const treeOps = (deleteable: boolean): OpMeta[] => [
+  {
+    id: 'insert',
+    label: 'insert',
+    needsValue: true,
+    needsIndex: false,
+    build: (value: number) => ({ type: 'insert', value }),
+  },
+  {
+    id: 'search',
+    label: 'search',
+    needsValue: true,
+    needsIndex: false,
+    build: (value: number) => ({ type: 'search', value }),
+  },
+  ...(deleteable
+    ? ([
+        {
+          id: 'delete',
+          label: 'delete',
+          needsValue: true,
+          needsIndex: false,
+          build: (value: number) => ({ type: 'delete', value }),
+        },
+      ] as OpMeta[])
+    : []),
+];
+
 export const STRUCTURES: Record<string, StructureEntry> = {
   'linked-list': listEntry(
     'linked-list',
@@ -168,6 +199,85 @@ export const STRUCTURES: Record<string, StructureEntry> = {
     ],
     { xor: true },
   ),
+  'binary-search-tree': {
+    slug: 'binary-search-tree',
+    name: 'Binary Search Tree',
+    desc: 'An ordered tree — left children hold smaller values, right children hold larger ones.',
+    layout: 'tree',
+    arrows: 'none',
+    wrap: false,
+    xor: false,
+    initial: [5, 3, 8],
+    defaultOps: [
+      { type: 'insert', value: 7 },
+      { type: 'insert', value: 1 },
+      { type: 'search', value: 3 },
+      { type: 'delete', value: 8 },
+      { type: 'insert', value: 9 },
+    ],
+    ops: treeOps(true),
+    build: (ops) => bstScript([5, 3, 8], ops as TreeOp[]),
+  },
+  'b-tree': {
+    slug: 'b-tree',
+    name: 'B-Tree',
+    desc: 'A self-balancing tree where nodes hold many keys and splits keep every leaf at the same depth.',
+    layout: 'tree',
+    arrows: 'none',
+    wrap: false,
+    xor: false,
+    initial: [10, 20, 30, 40, 50],
+    defaultOps: [
+      { type: 'insert', value: 25 },
+      { type: 'insert', value: 5 },
+      { type: 'insert', value: 15 },
+      { type: 'search', value: 30 },
+    ],
+    ops: treeOps(false),
+    build: (ops) => btreeScript([10, 20, 30, 40, 50], ops as BTreeOp[]),
+  },
+  graph: {
+    slug: 'graph',
+    name: 'Graph',
+    desc: 'A set of nodes joined by edges. Node ids are their positions around the circle.',
+    layout: 'graph',
+    arrows: 'none',
+    wrap: false,
+    xor: false,
+    initial: [1, 2],
+    defaultOps: [
+      { type: 'addNode', value: 3 },
+      { type: 'addEdge', from: 0, to: 2 },
+      { type: 'addEdge', from: 1, to: 2 },
+      { type: 'search', value: 3 },
+      { type: 'addNode', value: 4 },
+      { type: 'addEdge', from: 2, to: 4 },
+    ],
+    ops: [
+      {
+        id: 'addNode',
+        label: 'add node',
+        needsValue: true,
+        needsIndex: false,
+        build: (value: number) => ({ type: 'addNode', value }),
+      },
+      {
+        id: 'addEdge',
+        label: 'connect',
+        needsValue: true,
+        needsIndex: true,
+        build: (value: number, index: number) => ({ type: 'addEdge', from: value, to: index }),
+      },
+      {
+        id: 'search',
+        label: 'search',
+        needsValue: true,
+        needsIndex: false,
+        build: (value: number) => ({ type: 'search', value }),
+      },
+    ],
+    build: (ops) => graphScript([1, 2], ops as GraphOp[]),
+  },
   stack: {
     slug: 'stack',
     name: 'Stack',

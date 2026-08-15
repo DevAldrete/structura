@@ -3,12 +3,15 @@ import { Link, useParams } from 'react-router';
 import { STRUCTURES, type DSOp, type StructureEntry } from '~/ds';
 import { xorField } from '~/ds/lists';
 import type { DSState } from '~/ds/engine';
-import { StructCanvas, type CanvasState, type NodeVariant } from '~/components/models/StructCanvas';
+import {
+  StructCanvas,
+  type CanvasState,
+  type EdgeVariant,
+  type NodeVariant,
+} from '~/components/models/StructCanvas';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '~/components/models/size';
 import { Playback } from '~/components/controls/Playback';
 import { usePlayback } from '~/hooks/usePlayback';
-
-const WIDTH = 500;
-const HEIGHT = 220;
 
 function dsToCanvas(s: DSState, xor: boolean): CanvasState {
   const variant: Record<number, NodeVariant> = {};
@@ -24,7 +27,23 @@ function dsToCanvas(s: DSState, xor: boolean): CanvasState {
       labels[i] = [...(labels[i] ?? []), `X${xorField(i, s.values.length)}`];
     }
   }
-  return { values: s.values, variant, labels };
+
+  const edgeVariant: Record<number, EdgeVariant> = {};
+  for (const i of s.edgeHighlight ?? []) edgeVariant[i] = 'highlight';
+  for (const i of s.edgeActive ?? []) edgeVariant[i] = 'active';
+
+  return {
+    values: s.values,
+    variant,
+    labels,
+    root: s.root,
+    children: s.children,
+    treeLayout: s.treeLayout,
+    positions: s.positions,
+    edges: s.edges,
+    directed: s.directed,
+    edgeVariant,
+  };
 }
 
 function toNum(raw: string): number {
@@ -86,8 +105,8 @@ function StructureView({ ds }: { ds: StructureEntry }) {
 
       <StructCanvas
         state={state}
-        width={WIDTH}
-        height={HEIGHT}
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
         layout={ds.layout}
         arrows={ds.arrows}
         wrap={ds.wrap}
