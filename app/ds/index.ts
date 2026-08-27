@@ -115,7 +115,7 @@ const listEntry = (
   build: (ops) => linkedListScript(initial, ops as ListOp[], kind),
 });
 
-const treeOps = (deleteable: boolean): OpMeta[] => [
+const treeOps = (deleteable: boolean, traversals = false): OpMeta[] => [
   {
     id: 'insert',
     label: 'insert',
@@ -138,6 +138,31 @@ const treeOps = (deleteable: boolean): OpMeta[] => [
           needsValue: true,
           needsIndex: false,
           build: (value: number) => ({ type: 'delete', value }),
+        },
+      ] as OpMeta[])
+    : []),
+  ...(traversals
+    ? ([
+        {
+          id: 'traverse-in',
+          label: 'in-order',
+          needsValue: false,
+          needsIndex: false,
+          build: () => ({ type: 'traverse', order: 'in' }),
+        },
+        {
+          id: 'traverse-pre',
+          label: 'pre-order',
+          needsValue: false,
+          needsIndex: false,
+          build: () => ({ type: 'traverse', order: 'pre' }),
+        },
+        {
+          id: 'traverse-post',
+          label: 'post-order',
+          needsValue: false,
+          needsIndex: false,
+          build: () => ({ type: 'traverse', order: 'post' }),
         },
       ] as OpMeta[])
     : []),
@@ -211,11 +236,12 @@ export const STRUCTURES: Record<string, StructureEntry> = {
     defaultOps: [
       { type: 'insert', value: 7 },
       { type: 'insert', value: 1 },
-      { type: 'search', value: 3 },
-      { type: 'delete', value: 8 },
-      { type: 'insert', value: 9 },
+      { type: 'insert', value: 6 },
+      { type: 'traverse', order: 'in' },
+      { type: 'traverse', order: 'pre' },
+      { type: 'traverse', order: 'post' },
     ],
-    ops: treeOps(true),
+    ops: treeOps(true, true),
     build: (ops) => bstScript([5, 3, 8], ops as TreeOp[]),
   },
   'b-tree': {

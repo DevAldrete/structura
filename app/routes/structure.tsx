@@ -15,6 +15,7 @@ import { usePlayback } from '~/hooks/usePlayback';
 
 function dsToCanvas(s: DSState, xor: boolean): CanvasState {
   const variant: Record<number, NodeVariant> = {};
+  for (const i of s.done) variant[i] = 'done';
   for (const i of s.highlighted) variant[i] = 'highlight';
   for (const i of s.active) variant[i] = 'active';
 
