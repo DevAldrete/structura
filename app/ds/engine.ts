@@ -23,6 +23,7 @@ export interface DSState extends DSStructure {
   values: Value[];
   highlighted: number[];
   active: number[];
+  done: number[];
   labels: Record<number, string[]>;
   note: string;
 }
@@ -46,6 +47,7 @@ export function makeEmitter(values: Value[], structural: Record<number, string[]
       values: [...values],
       highlighted: [...highlighted],
       active: [...active],
+      done: [],
       labels,
       note,
       ...structure,

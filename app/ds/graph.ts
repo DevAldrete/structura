@@ -21,6 +21,7 @@ export function* graphScript(initial: number[], ops: GraphOp[]): Generator<DSSta
     values: [...nodes],
     highlighted: [...highlighted],
     active: [...active],
+    done: [],
     labels,
     note,
     positions: circlePositions(nodes.length, CANVAS_WIDTH, CANVAS_HEIGHT),

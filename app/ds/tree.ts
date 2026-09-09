@@ -3,7 +3,8 @@ import type { DSState } from './engine';
 export type TreeOp =
   | { type: 'insert'; value: number }
   | { type: 'search'; value: number }
-  | { type: 'delete'; value: number };
+  | { type: 'delete'; value: number }
+  | { type: 'traverse'; order: 'in' | 'pre' | 'post' };
 
 interface BNode {
   id: number;
@@ -67,12 +68,20 @@ export function* bstScript(initial: number[], ops: TreeOp[]): Generator<DSState>
     return { values, children, root: root ? (indexOf.get(root.id) ?? -1) : -1, indexOf };
   }
 
-  function emit(note: string, highlight: BNode[] = [], active: BNode[] = []): DSState {
+  function emit(
+    note: string,
+    highlight: BNode[] = [],
+    active: BNode[] = [],
+    done: BNode[] = [],
+  ): DSState {
     const s = snapshot();
     const highlighted = highlight
       .map((n) => s.indexOf.get(n.id))
       .filter((i): i is number => i !== undefined);
     const activeIdx = active
+      .map((n) => s.indexOf.get(n.id))
+      .filter((i): i is number => i !== undefined);
+    const doneIdx = done
       .map((n) => s.indexOf.get(n.id))
       .filter((i): i is number => i !== undefined);
     const labels: Record<number, string[]> = {};
@@ -81,6 +90,7 @@ export function* bstScript(initial: number[], ops: TreeOp[]): Generator<DSState>
       values: s.values,
       highlighted,
       active: activeIdx,
+      done: doneIdx,
       labels,
       note,
       root: s.root,
@@ -198,6 +208,45 @@ export function* bstScript(initial: number[], ops: TreeOp[]): Generator<DSState>
             );
           }
         }
+        break;
+      }
+      case 'traverse': {
+        if (!root) {
+          yield emit('tree is empty — nothing to traverse', []);
+          break;
+        }
+        const order = op.order;
+        const formula = {
+          in: 'left → root → right',
+          pre: 'root → left → right',
+          post: 'left → right → root',
+        }[order];
+        const useCase = {
+          in: 'useful: a BST visited in-order yields its values in sorted order',
+          pre: 'useful: serializing or copying a tree — the order preserves its structure',
+          post: 'useful: deleting a tree bottom-up and evaluating postfix expressions',
+        }[order];
+        const seq: number[] = [];
+        const visited: BNode[] = [];
+        const note = (node: BNode) =>
+          `${order}-order visit ${node.value} — sequence: [${seq.join(', ')}]`;
+        const push = (node: BNode): Generator<DSState> =>
+          (function* () {
+            seq.push(node.value);
+            yield emit(note(node), [], [node], visited);
+            visited.push(node);
+          })();
+        const walk = (node: BNode): Generator<DSState> =>
+          (function* () {
+            if (order === 'pre') yield* push(node);
+            if (node.left) yield* walk(node.left);
+            if (order === 'in') yield* push(node);
+            if (node.right) yield* walk(node.right);
+            if (order === 'post') yield* push(node);
+          })();
+        yield emit(`${order}-order: ${formula}. ${useCase}`, []);
+        yield* walk(root);
+        yield emit(`${order}-order result: [${seq.join(', ')}] — ${useCase}`, []);
         break;
       }
     }

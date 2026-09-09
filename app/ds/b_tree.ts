@@ -102,6 +102,7 @@ export function* btreeScript(initial: number[], ops: BTreeOp[]): Generator<DSSta
       values: s.values,
       highlighted,
       active: activeIdx,
+      done: [],
       labels,
       note,
       root: s.root,
