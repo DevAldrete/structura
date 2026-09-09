@@ -2,11 +2,23 @@ import type { DSState } from './engine';
 import { btreeScript, type BTreeOp } from './b_tree';
 import { graphScript, type GraphOp } from './graph';
 import { linkedListScript, type ListKind, type ListOp } from './lists';
+import { pieceTableScript, type PieceTableOp } from './piece_table';
 import { queueScript, type QueueOp } from './queue';
+import { ropeScript, type RopeOp } from './rope';
+import { splayScript, type SplayOp } from './splay';
 import { stackScript, type StackOp } from './stack';
 import { bstScript, type TreeOp } from './tree';
 
-export type DSOp = ListOp | StackOp | QueueOp | TreeOp | BTreeOp | GraphOp;
+export type DSOp =
+  | ListOp
+  | StackOp
+  | QueueOp
+  | TreeOp
+  | BTreeOp
+  | GraphOp
+  | PieceTableOp
+  | RopeOp
+  | SplayOp;
 
 export type Layout = 'row' | 'column' | 'tree' | 'graph';
 export type Arrows = 'none' | 'forward' | 'both';
@@ -370,5 +382,103 @@ export const STRUCTURES: Record<string, StructureEntry> = {
       },
     ],
     build: (ops) => queueScript([2, 4], ops as QueueOp[]),
+  },
+  'piece-table': {
+    slug: 'piece-table',
+    name: 'Piece Table',
+    desc: 'Text buffer as pieces over original + add buffers. Values are char codes (e.g. 65 = A).',
+    layout: 'row',
+    arrows: 'forward',
+    wrap: false,
+    xor: false,
+    initial: [72, 105],
+    defaultOps: [
+      { type: 'insert', index: 2, value: 33 },
+      { type: 'insert', index: 0, value: 62 },
+      { type: 'search', value: 105 },
+      { type: 'delete', index: 0 },
+    ],
+    ops: [
+      {
+        id: 'insert',
+        label: 'insert char',
+        needsValue: true,
+        needsIndex: true,
+        build: (value: number, index: number) => ({ type: 'insert', index, value }),
+      },
+      {
+        id: 'delete',
+        label: 'delete',
+        needsValue: false,
+        needsIndex: true,
+        build: (_value: number, index: number) => ({ type: 'delete', index }),
+      },
+      {
+        id: 'search',
+        label: 'search char',
+        needsValue: true,
+        needsIndex: false,
+        build: (value: number) => ({ type: 'search', value }),
+      },
+    ],
+    build: (ops) => pieceTableScript([72, 105], ops as PieceTableOp[]),
+  },
+  rope: {
+    slug: 'rope',
+    name: 'Rope',
+    desc: 'Binary tree of short string chunks for O(log n) edits. Leaves show char codes; internal nodes show length.',
+    layout: 'tree',
+    arrows: 'none',
+    wrap: false,
+    xor: false,
+    initial: [72, 101, 108, 108, 111],
+    defaultOps: [
+      { type: 'insert', index: 5, value: 33 },
+      { type: 'insert', index: 0, value: 62 },
+      { type: 'search', value: 108 },
+      { type: 'delete', index: 0 },
+    ],
+    ops: [
+      {
+        id: 'insert',
+        label: 'insert char',
+        needsValue: true,
+        needsIndex: true,
+        build: (value: number, index: number) => ({ type: 'insert', index, value }),
+      },
+      {
+        id: 'delete',
+        label: 'delete',
+        needsValue: false,
+        needsIndex: true,
+        build: (_value: number, index: number) => ({ type: 'delete', index }),
+      },
+      {
+        id: 'search',
+        label: 'search char',
+        needsValue: true,
+        needsIndex: false,
+        build: (value: number) => ({ type: 'search', value }),
+      },
+    ],
+    build: (ops) => ropeScript([72, 101, 108, 108, 111], ops as RopeOp[]),
+  },
+  'splay-tree': {
+    slug: 'splay-tree',
+    name: 'Splay Tree',
+    desc: 'Self-adjusting BST — every access rotates the node to the root via zig / zig-zig / zig-zag.',
+    layout: 'tree',
+    arrows: 'none',
+    wrap: false,
+    xor: false,
+    initial: [50, 30, 70, 20, 40],
+    defaultOps: [
+      { type: 'search', value: 20 },
+      { type: 'insert', value: 60 },
+      { type: 'traverse', order: 'in' },
+      { type: 'delete', value: 30 },
+    ],
+    ops: treeOps(true, true),
+    build: (ops) => splayScript([50, 30, 70, 20, 40], ops as SplayOp[]),
   },
 };

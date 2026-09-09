@@ -1,10 +1,14 @@
 import type { SortingAlgo } from '~/components/engine/engine';
 import type { GraphRunner } from '~/graph/graph';
 import { bubbleSort } from './bubble_sort';
+import { heapSort } from './heap_sort';
 import { insertionSort } from './insertion_sort';
 import { mergeSort } from './merge_sort';
 import { quickSort } from './quick_sort';
+import { radixSort } from './radix_sort';
 import { selectionSort } from './selection_sort';
+import { shellSort } from './shell_sort';
+import { timSort } from './tim_sort';
 import { myersDiff, type DiffRunner } from './myers_diff';
 import { bfs } from '~/graph/bfs';
 import { dfs } from '~/graph/dfs';
@@ -65,9 +69,41 @@ export const ALGOS: Record<string, AlgoEntry> = {
     slug: 'quick-sort',
     name: 'Quick Sort',
     desc: 'Picks a pivot, partitions around it, and recurses on each side.',
-    complexity: 'O(n log n)',
+    complexity: 'O(n log n) avg',
     input: 'array',
     run: quickSort,
+  },
+  'shell-sort': {
+    slug: 'shell-sort',
+    name: 'Shell Sort',
+    desc: 'Generalizes insertion sort by comparing elements gapped apart, shrinking the gap.',
+    complexity: 'O(n log n) ~ O(n²)',
+    input: 'array',
+    run: shellSort,
+  },
+  'heap-sort': {
+    slug: 'heap-sort',
+    name: 'Heap Sort',
+    desc: 'Builds a max-heap, then repeatedly extracts the maximum to the end.',
+    complexity: 'O(n log n)',
+    input: 'array',
+    run: heapSort,
+  },
+  'radix-sort': {
+    slug: 'radix-sort',
+    name: 'Radix Sort',
+    desc: 'Stable LSD digit sort (base 10) for non-negative integers — no comparisons.',
+    complexity: 'O(d·n)',
+    input: 'array',
+    run: radixSort,
+  },
+  'tim-sort': {
+    slug: 'tim-sort',
+    name: 'Tim Sort',
+    desc: 'Insertion sort on small runs, then stable merges (simplified, no galloping).',
+    complexity: 'O(n log n)',
+    input: 'array',
+    run: timSort,
   },
   bfs: {
     slug: 'bfs',
