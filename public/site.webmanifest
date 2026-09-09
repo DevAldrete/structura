@@ -1,0 +1,17 @@
+{
+  "name": "Structura — Logic Lab",
+  "short_name": "Structura",
+  "description": "A logic lab for students, academics, and curious minds to learn about Algorithms and Data Structures in a visual way.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/structura.png",
+      "sizes": "1254x1254",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

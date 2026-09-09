@@ -11,6 +11,10 @@ import type { Route } from './+types/root';
 import './app.css';
 
 export const links: Route.LinksFunction = () => [
+  { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
+  { rel: 'icon', type: 'image/svg+xml', href: '/structura.svg' },
+  { rel: 'apple-touch-icon', href: '/structura.png' },
+  { rel: 'manifest', href: '/site.webmanifest' },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
     rel: 'preconnect',
@@ -29,6 +33,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000" />
+        {/* Site-wide social tags as static tags: the `meta` export of the
+            last matching leaf route replaces (not merges) ancestors' meta,
+            so root `meta` would be shadowed on every page with its own meta.
+            TODO: use an absolute URL (https://<domain>/structura.png) for
+            og:image/twitter:image once the production domain is known. */}
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Structura" />
+        <meta property="og:title" content="Structura — Logic Lab" />
+        <meta
+          property="og:description"
+          content="A logic lab for students, academics, and curious minds to learn about Algorithms and Data Structures in a visual way."
+        />
+        <meta property="og:image" content="/structura.png" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Structura — Logic Lab" />
+        <meta
+          name="twitter:description"
+          content="A logic lab for students, academics, and curious minds to learn about Algorithms and Data Structures in a visual way."
+        />
+        <meta name="twitter:image" content="/structura.png" />
         <Meta />
         <Links />
       </head>
